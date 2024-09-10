@@ -1,7 +1,7 @@
 const cheerio = require("cheerio");
 const express = require("express");
 const router = express.Router();
-const baseURL = "https://kuramanime.biz";
+const baseURL = "https://kuramanime.dad";
 
 //On Going
 //OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
