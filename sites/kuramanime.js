@@ -466,7 +466,7 @@ const Schedule = async (req, res) => {
     }, null, 1));
   }
 };
-router.get("/schedule/:order_by/:page", Schedule);
+router.get("/schedule/:scheduled_day/:page", Schedule);
 
 //Properties Type
 //Type => genre, season, studio, type, quality, source, country
