@@ -150,8 +150,23 @@ const AnimeInfo = async (req, res) => {
     const response = await fetch(urlAnimeInfo);
     const data = await response.text();
     const $ = cheerio.load(data);
+    
+    const $$ = $("a#episodeLists").attr("data-content");
+    const $$$ = cheerio.load($$);
+    const list = $$$("a.btn-secondary");
+    let array = list.map((i, e) => $(e).text()?.replace("\n\n", " ").trim()).get();
+    const [firstItem, ...rest] = array;
+    const lastItem = rest.pop();
+    
+    let array2 = list.map((i, e) => $(e).attr("href")).get();
+    const [...linkRes] = array2;
+    const linkEps = linkRes.pop().replace(`${baseURL}`, "");
+    
+    const epsL = firstItem.replace(" (Terlama)", "");
+    const epsB = lastItem.replace(" (Terbaru)", "");
+    
     let dat = [];
-    const allEps = await getEpsList(urlAnimeInfo);
+    const allEps = await getEpsList(urlAnimeInfo);      
     const batchElement = $("#episodeBatchLists");
     let batchId = "?";
     if (batchElement.length) {
@@ -167,28 +182,28 @@ const AnimeInfo = async (req, res) => {
     }
     const el = $("section.anime-details > div.container > div.anime__details__content").each((i, e) => {
       dat.push({
-        title: $(".anime__details__title h3").text().trim(),
-        alternativeTitle: $(".anime__details__title span").text().trim(),
-        image: $(".anime__details__pic").attr("data-setbg") || "",
-        synopsis: $("#synopsisField").html()?.replace(/(<br\s*\/?>|<\/?i>)+/gi, " ").trim() || "",
-        type: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(1) > div > div > a").text().trim(),
-        totalEpisodes: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(2) > div > div > a").text().trim(),
+        judul: $(".anime__details__title h3").text().trim(),
+        alJudul: $(".anime__details__title span").text().trim(),
+        gambar: $(".anime__details__pic").attr("data-setbg") || "",
+        synopsis: $("#synopsisField")?.html().replace("\n", "<br/>"),
+        tipe: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(1) > div > div > a").text().trim(),
+        totEps: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(2) > div > div > a").text().trim(),
         status: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(3) > div > div > a").text().trim(),
-        release: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(4) > div > div > a").text().trim(),
+        tayang: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(4) > div > div > a").text().replace(" s/d", " s/d "),
         season: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(5) > div > div > a").text().trim(),
-        duration: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(6) > div > div > a").text().trim(),
-        quality: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(7) > div > div > a").text().trim(),
-        country: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(8) > div > div > a").text().trim(),
-        adaptation: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(9) > div > div > a").text().trim(),
-        genres: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(1) > div > div > a").map((i, e) => $(e).text().replace(/,/g, "").trim()).get(),
+        durasi: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(6) > div > div > a").text().trim(),
+        kualitas: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(7) > div > div > a").text().trim(),
+        negara: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(8) > div > div > a").text().trim(),
+        adaptasi: $(".anime__details__widget > div > div:nth-child(1) > ul > li:nth-child(9) > div > div > a").text().trim(),
+        genre: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(1) > div > div > a").map((i, e) => $(e).text().replace(/,/g, "").trim()).get(),
         eksplisit: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(2) > div > div > a").text().trim(),
         demographic: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(3) > div > div > a").text().trim(),
         theme: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(4) > div > div > a").text()?.replace("\n\n", " ").trim(),
         studio: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(5) > div > div > a").text().trim(),
-        score: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(6) > div > div > a").text().trim(),
-        enthusiast: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(7) > div > div > a").text().trim(),
-        ratings: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(8) > div > div > a").text().trim(),
-        credit: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(9) > div > div > a").text().replace("\n\n", " ").trim(),
+        skor: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(6) > div > div > a").text().trim(),
+        peminat: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(7) > div > div > a").text().trim(),
+        rating: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(8) > div > div > a").text().trim(),
+        kredit: $(".anime__details__widget > div > div:nth-child(2) > ul > li:nth-child(9) > div > div > a").text().replace(/\s+/g, " "),
         epsList: allEps,
         batchId: batchId
       })
@@ -198,6 +213,9 @@ const AnimeInfo = async (req, res) => {
       statusCode: 200,
       nimeID: nimeID,
       slug: slug,
+      epsL: epsL,
+      epsB: epsB,
+      linkEps: linkEps,
       data: dat
     }, null, 1));
   } catch (error) {
