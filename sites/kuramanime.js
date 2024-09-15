@@ -316,7 +316,7 @@ const Streaming = async (req, res) => {
       const nextEps = $(".after__nav.ep-button").attr("href")?.split("/")[7];
       const listStream = $("#player > source").map((i, e) => ({
         urlStream: $(e).attr("src"),
-        tipeStrean: $(e).attr("type"),
+        tipeStream: $(e).attr("type"),
         ukuranStream: `${$(e).attr("size")}p (${server})`
       })).get();
       const downLinks = $("#animeDownloadLink h6").map((i, elem) => {
