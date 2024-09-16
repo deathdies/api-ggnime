@@ -6,7 +6,7 @@ const baseURL = "https://kuramanime.dad";
 
 //On Going
 //OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
-const getOngoingAnime = async (req, res) => {
+const OnGoing = async (req, res) => {
   const options = {
     url: `${baseURL}/quick/ongoing?order_by=${req.params.order_by}&page=${req.params.page}`,
     headers: {
