@@ -59,92 +59,108 @@ router.get("/ongoing/:order_by/:page", OnGoing);
 //Completed
 //OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
 const Completed = async (req, res) => {
-  try {
-    const urlCompleted = `${baseURL}/quick/finished?order_by=${req.params.order_by}&page=${req.params.page}`;
-    const response = await fetch(urlCompleted);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      prevPage = false;
+  const options = {
+    url: `${baseURL}/quick/finished?order_by=${req.params.order_by}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
     }
-    let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      nextPage = false;
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          rating: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
     }
-    let dat = [];
-    const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
-      dat.push({
-        tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
-        nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
-        rating: $(e).find("a > div > div.ep > span").text().trim(),
-        judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
-        slug: $(e).find("div > a").attr("href")?.split("/")[5],
-        gambar: $(e).find("a > div").attr("data-setbg")?.trim()
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      page: req.params.page,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      order_by: req.params.order_by,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
+  });
 };
 router.get("/completed/:order_by/:page", Completed);
 
 //Movies
 //OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
 const Movies = async (req, res) => {
-  try {
-    const urlMovies = `${baseURL}/quick/movie?order_by=${req.params.order_by}&page=${req.params.page}`;
-    const response = await fetch(urlMovies);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      prevPage = false;
+  const options = {
+    url: `${baseURL}/quick/movie?order_by=${req.params.order_by}&page=${req.params.page}`;
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
     }
-    let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      nextPage = false;
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          rating: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
     }
-    let dat = [];
-    const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
-      dat.push({
-        tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
-        nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
-        rating: $(e).find("a > div > div.ep > span").text().trim(),
-        judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
-        slug: $(e).find("div > a").attr("href")?.split("/")[5],
-        gambar: $(e).find("a > div").attr("data-setbg")?.trim()
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      page: req.params.page,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      order_by: req.params.order_by,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
+  });
 };
 router.get("/movies/:order_by/:page", Movies);
+
+
+
+
 
 //Anime Info
 //nimeID Try => 50
@@ -496,30 +512,36 @@ router.get("/schedule/:scheduled_day/:page", Schedule);
 //Properties Type
 //Type => genre, season, studio, type, quality, source, country
 const PropertiesType = async (req, res) => {
-  try {
-    const urlPropertiesType = `${baseURL}/properties/${req.params.ptype}`;
-    const response = await fetch(urlPropertiesType);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let dat = [];
-    const el = $("div#animeList > div.container > div.kuramanime__genres > ul > li").each((i, e) => {
-      dat.push({
-        nama: $(e).find("a").text(),
-        propertiesID: $(e).find("a").attr("href")?.split("/")[5].split("?")[0]
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      propertiesType: req.params.ptype,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
+  const options = {
+    url: `${baseURL}/properties/${req.params.ptype}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let dat = [];
+      const el = $("div#animeList > div.container > div.kuramanime__genres > ul > li").each((i, e) => {
+        dat.push({
+          nama: $(e).find("a").text(),
+          propertiesID: $(e).find("a").attr("href")?.split("/")[5].split("?")[0]
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        propertiesType: req.params.ptype,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
 };
 router.get("/properties/:ptype", PropertiesType);
 
@@ -528,47 +550,53 @@ router.get("/properties/:ptype", PropertiesType);
 //Properties ID : Example => for genre is action or sesason is fall 2024
 //OrderBy => updated, most_viewed, popular, latest, oldest, ascending, descending
 const PropertiesAnime = async (req, res) => {
-  try {
-    const urlPropertiesAnime = `${baseURL}/properties/${req.params.ptype}/${req.params.pid}?order_by=${req.params.order_by}&page=${req.params.page}`;
-    const response = await fetch(urlPropertiesAnime);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      prevPage = false;
+  const options = {
+    url: `${baseURL}/properties/${req.params.ptype}/${req.params.pid}?order_by=${req.params.order_by}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
     }
-    let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      nextPage = false;
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          rating: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        propertiesID: req.params.pid,
+        propertiesType: req.params.ptype,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
     }
-    let dat = [];
-    const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
-      dat.push({
-        tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
-        nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
-        rating: $(e).find("a > div > div.ep > span").text().trim(),
-        judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
-        slug: $(e).find("div > a").attr("href")?.split("/")[5],
-        gambar: $(e).find("a > div").attr("data-setbg")?.trim()
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      page: req.params.page,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      order_by: req.params.order_by,
-      propertiesID: req.params.pid,
-      propertiesType: req.params.ptype,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
+  });
 };
 router.get("/properties/:ptype/:pid/:order_by/:page", PropertiesAnime);
 
