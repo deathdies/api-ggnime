@@ -107,6 +107,61 @@ const Completed = async (req, res) => {
 };
 router.get("/completed/:order_by/:page", Completed);
 
+//UpComing
+//OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
+const UpComing = async (req, res) => {
+  const options = {
+    url: `${baseURL}/quick/upcoming?order_by=${req.params.order_by}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          tayang: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
+};
+router.get("/completed/:order_by/:page", UpComing);
+
+
+
+
+
 //Movies
 //OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
 const Movies = async (req, res) => {
@@ -157,6 +212,210 @@ const Movies = async (req, res) => {
   });
 };
 router.get("/movies/:order_by/:page", Movies);
+
+//Search
+//slug Try => One+Piece
+//OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
+const Search = async (req, res) => {
+  const options = {
+    url: `${baseURL}/anime?order_by=${req.params.order_by}&search=${req.params.slug}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          rating: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        slug: req.params.slug,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
+};
+router.get("/search/:order_by/:slug/:page", Search);
+
+//Schedule
+//Schedule Day => all, monday, tuesday, wednesday, thursday, friday, saturday, sunday, random
+const Schedule = async (req, res) => {
+  const options = {
+    url: `${baseURL}/schedule?scheduled_day=${req.params.scheduled_day}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          hari: $(e).find("a > div > div.view-end > ul > li:nth-child(1) > span").text().trim(),
+          waktu: $(e).find("a > div > div.view-end > ul > li:nth-child(2) > span").text().trim(),
+          eps: $(e).find("a > div > div.ep > span:last-child").text().trim().replace("\n", " "),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        jadwal: req.params.scheduled_day,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
+};
+router.get("/schedule/:scheduled_day/:page", Schedule);
+
+//Properties Type
+//Type => genre, season, studio, type, quality, source, country
+const PropertiesType = async (req, res) => {
+  const options = {
+    url: `${baseURL}/properties/${req.params.ptype}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let dat = [];
+      const el = $("div#animeList > div.container > div.kuramanime__genres > ul > li").each((i, e) => {
+        dat.push({
+          nama: $(e).find("a").text(),
+          propertiesID: $(e).find("a").attr("href")?.split("/")[5].split("?")[0]
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        propertiesType: req.params.ptype,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
+};
+router.get("/properties/:ptype", PropertiesType);
+
+//Properties Anime
+//Properties Type => genre, season, studio, type, quality, source, country
+//Properties ID : Example => for genre is action or sesason is fall 2024
+//OrderBy => updated, most_viewed, popular, latest, oldest, ascending, descending
+const PropertiesAnime = async (req, res) => {
+  const options = {
+    url: `${baseURL}/properties/${req.params.ptype}/${req.params.pid}?order_by=${req.params.order_by}&page=${req.params.page}`,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+    }
+  };
+  request(options, (error, response, html) => {
+    try {
+      const $ = cheerio.load(html);
+      let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        prevPage = false;
+      }
+      let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
+      if (!$(".product__pagination").length) {
+        nextPage = false;
+      }
+      let dat = [];
+      const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
+        dat.push({
+          tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
+          nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
+          rating: $(e).find("a > div > div.ep > span").text().trim(),
+          judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
+          slug: $(e).find("div > a").attr("href")?.split("/")[5],
+          gambar: $(e).find("a > div").attr("data-setbg")?.trim()
+        })
+      });
+      res.end(JSON.stringify({
+        status: "success",
+        statusCode: 200,
+        page: req.params.page,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        order_by: req.params.order_by,
+        propertiesID: req.params.pid,
+        propertiesType: req.params.ptype,
+        data: dat
+      }, null, 1));
+    } catch (error) {
+      res.end(JSON.stringify({
+        status: error.message,
+        statusCode: 500
+      }, null, 1));
+    }
+  });
+};
+router.get("/properties/:ptype/:pid/:order_by/:page", PropertiesAnime);
+
+
+
+
+
+
+
 
 
 
@@ -249,53 +508,6 @@ const AnimeInfo = async (req, res) => {
   }
 };
 router.get("/animeinfo/:nimeID/:slug", AnimeInfo);
-
-//Search
-//slug Try => One+Piece
-//OrderBy Try => updated, most_viewed, popular, latest, oldest, ascending, descending
-const Search = async (req, res) => {
-  try {
-    const urlSearch = `${baseURL}/anime?order_by=${req.params.order_by}&search=${req.params.slug}&page=${req.params.page}`;
-    const response = await fetch(urlSearch);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      prevPage = false;
-    }
-    let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      nextPage = false;
-    }
-    let dat = [];
-    const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
-      dat.push({
-        tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
-        nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
-        rating: $(e).find("a > div > div.ep > span").text().trim(),
-        judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
-        slug: $(e).find("div > a").attr("href")?.split("/")[5],
-        gambar: $(e).find("a > div").attr("data-setbg")?.trim()
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      page: req.params.page,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      order_by: req.params.order_by,
-      slug: req.params.slug,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
-};
-router.get("/search/:order_by/:slug/:page", Search);
 
 //Streaming
 //nimeID Try => 50
@@ -462,94 +674,15 @@ const BatchDown = async (req, res) => {
 };
 router.get("/batch/:nimeID/:slug/:batchID", BatchDown);
 
-//Schedule
-//Schedule Day => all, monday, tuesday, wednesday, thursday, friday, saturday, sunday, random
-const Schedule = async (req, res) => {
-  try {
-    const urlSchedule = `${baseURL}/schedule?scheduled_day=${req.params.scheduled_day}&page=${req.params.page}`;
-    const response = await fetch(urlSchedule);
-    const data = await response.text();
-    const $ = cheerio.load(data);
-    let prevPage = $("a.gray__color .fa-angle-left").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      prevPage = false;
-    }
-    let nextPage = $("a.gray__color .fa-angle-right").length > 0 ? false : true;
-    if (!$(".product__pagination").length) {
-      nextPage = false;
-    }
-    let dat = [];
-    const el = $("div#animeList > div.col-lg-4 > div.product__item").each((i, e) => {
-      dat.push({
-        tipe: $(e).find("div > ul > a").map((i, el) => $(el).text().trim()).get(),
-        nimeID: $(e).find("div > a").attr("href")?.split("/")[4],
-        hari: $(e).find("a > div > div.view-end > ul > li:nth-child(1) > span").text().trim(),
-        waktu: $(e).find("a > div > div.view-end > ul > li:nth-child(2) > span").text().trim(),
-        eps: $(e).find("a > div > div.ep > span:last-child").text().trim().replace("\n", " "),
-        judul: $(e).find("div > h5").text().replace(/\\/g, "").trim(),
-        slug: $(e).find("div > a").attr("href")?.split("/")[5],
-        gambar: $(e).find("a > div").attr("data-setbg")?.trim()
-      })
-    });
-    res.end(JSON.stringify({
-      status: "success",
-      statusCode: 200,
-      page: req.params.page,
-      prevPage: prevPage,
-      nextPage: nextPage,
-      jadwal: req.params.scheduled_day,
-      data: dat
-    }, null, 1));
-  } catch (error) {
-    res.end(JSON.stringify({
-      status: error.message,
-      statusCode: 500
-    }, null, 1));
-  }
-};
-router.get("/schedule/:scheduled_day/:page", Schedule);
 
-//Properties Type
-//Type => genre, season, studio, type, quality, source, country
-const PropertiesType = async (req, res) => {
-  const options = {
-    url: `${baseURL}/properties/${req.params.ptype}`,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-    }
-  };
-  request(options, (error, response, html) => {
-    try {
-      const $ = cheerio.load(html);
-      let dat = [];
-      const el = $("div#animeList > div.container > div.kuramanime__genres > ul > li").each((i, e) => {
-        dat.push({
-          nama: $(e).find("a").text(),
-          propertiesID: $(e).find("a").attr("href")?.split("/")[5].split("?")[0]
-        })
-      });
-      res.end(JSON.stringify({
-        status: "success",
-        statusCode: 200,
-        propertiesType: req.params.ptype,
-        data: dat
-      }, null, 1));
-    } catch (error) {
-      res.end(JSON.stringify({
-        status: error.message,
-        statusCode: 500
-      }, null, 1));
-    }
-  });
-};
-router.get("/properties/:ptype", PropertiesType);
 
-//Properties Anime
-//Properties Type => genre, season, studio, type, quality, source, country
-//Properties ID : Example => for genre is action or sesason is fall 2024
-//OrderBy => updated, most_viewed, popular, latest, oldest, ascending, descending
-const PropertiesAnime = async (req, res) => {
+
+
+
+
+
+//Get Bacth ID
+const getBatchID = async (req, res) => {
   const options = {
     url: `${baseURL}/properties/${req.params.ptype}/${req.params.pid}?order_by=${req.params.order_by}&page=${req.params.page}`,
     headers: {
@@ -598,9 +731,9 @@ const PropertiesAnime = async (req, res) => {
     }
   });
 };
-router.get("/properties/:ptype/:pid/:order_by/:page", PropertiesAnime);
+module.exports = getBatchID;
 
-//Get Eps List From Anime Info
+//Get Eps List
 const getEpsList = async (url, epsList = []) => {
   try {
     const response = await fetch(url);
