@@ -156,7 +156,7 @@ const UpComing = async (req, res) => {
     }
   });
 };
-router.get("/completed/:order_by/:page", UpComing);
+router.get("/upcoming/:order_by/:page", UpComing);
 
 
 
